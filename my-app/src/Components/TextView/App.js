@@ -13,9 +13,12 @@ const styles = makeStyles({
 
 const submitHandler = async (text) => {
     console.log(text);
-    fetch('http://localhost:5000/textanalysis' + new URLSearchParams({
-      'text': text
-    })).then(res => res.json()).then(data => {
+    fetch('http://localhost:5000/textanalysis', {
+      method: 'POST',
+      body: JSON.stringify({
+        text: text
+      })
+    }).then(res => res.json()).then(data => {
       console.log(data)
     });
 };
