@@ -55,9 +55,10 @@ def analyse_image():
     base64encoding = message['image']
     base64_bytes = base64.b64decode(base64encoding)
     image = np.frombuffer(base64_bytes, dtype=np.uint8)
-    resized_image = preprocess_image(image)
+    img = cv2.imdecode(image, flags=cv2.IMREAD_COLOR)
+    resized_image = preprocess_image(img)
 
-    if resized_image == -1:
+    if resized_image is None:
         response = {
             "NoFace": True
         }
@@ -84,7 +85,7 @@ def analyse_image():
 
 
 def preprocess_image(image, target_size=(48, 48)):
-    image = np.array(image)
+
     if len(image.shape) == 3 and image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -97,20 +98,19 @@ def preprocess_image(image, target_size=(48, 48)):
         image,
         scaleFactor=1.05,
         minNeighbors=3,
-        minSize=(30, 30)
+        minSize=(10, 10)
     )
 
     if len(faces) == 0:
-        return -1
+        return None
 
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         face = image[y:y + h, x:x + w]
         break  # Only detect first face
 
-    cv2.resize(face, target_size)
-    if face.shape[2] == 1:
-        face = np.repeat(face[:, :, np.newaxis], 3, axis=2)
+    face = cv2.resize(face, target_size, interpolation=cv2.INTER_AREA)
 
+    face = np.repeat(face[:, :, np.newaxis], 3, axis=2)
     face = np.expand_dims(face, axis=0)
     return face
