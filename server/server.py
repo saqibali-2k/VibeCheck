@@ -36,7 +36,7 @@ def analyse_text():
     # The text to analyze
     message = request.get_json(force=True)
     text = message['text']
-    document = language_v1.Document(content=text, type=language_v1.Document.Type.PLAIN_TEXT)
+    document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
 
     # Detects the sentiment of the text
     sentiment = client.analyze_sentiment(request={'document': document}).document_sentiment
