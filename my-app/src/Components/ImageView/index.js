@@ -10,12 +10,6 @@ import {
 import Slide from "@material-ui/core/Slide";
 import Webcam from "react-webcam";
 
-class ImageButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-}
-
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -35,6 +29,7 @@ class ImageView extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleScreenShot = this.handleScreenShot.bind(this);
         this.onFileSelected = this.onFileSelected.bind(this);
+        this.submit = this.submit.bind(this);
     }
 
     handleShow() {
@@ -57,6 +52,24 @@ class ImageView extends React.Component {
             scrnshot: imgSrc,
         });
         this.handleClose();
+    }
+
+    submit() {
+        const message = {
+            image: this.state.scrnshot.replace("data:image/jpeg;base64", ""),
+        };
+        const params = {
+            headers: {
+                "content-type": "application/json; charset=UTF-8",
+            },
+            body: JSON.stringify(message),
+            method: "POST",
+        }
+        fetch("http://localhost:5000/imageanalysis", params).then((response) => {
+            return response.json();
+        }).then((data) => {
+            console.log(data)
+        }).catch(error => console.log(error))
     }
 
     onFileSelected(e) {
@@ -129,6 +142,12 @@ class ImageView extends React.Component {
                     </DialogActions>
                 </Dialog>
                 <img src={this.state.scrnshot} />
+
+                {this.state.scrnshot != null && 
+                (<Button onClick={this.submit}>
+                    Submit
+                </Button>)}
+                
             </div>
         );
     }
