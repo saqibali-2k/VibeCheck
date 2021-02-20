@@ -7,7 +7,7 @@ import TextView from "./Components/TextView/App";
 
 ReactDOM.render(
     <React.StrictMode>
-        <TextView />
+        <App />
     </React.StrictMode>,
     document.getElementById("root")
 );
