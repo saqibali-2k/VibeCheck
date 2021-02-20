@@ -30,11 +30,12 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
-@app.route('/textanalysis', methods=['GET'])
+@app.route('/textanalysis', methods=['POST'])
 @cross_origin()
 def analyse_text():
     # The text to analyze
-    text = request.args.get('text')
+    message = request.get_json(force=True)
+    text = message['text']
     document = language_v1.Document(content=text, type=language_v1.Document.Type.PLAIN_TEXT)
 
     # Detects the sentiment of the text
@@ -46,28 +47,15 @@ def analyse_text():
     return jsonify(response)
 
 
-@app.route('/textanalysis', methods=['GET'])
-@cross_origin()
-def analyse_text():
-    # The text to analyze
-    text = request.args.get('text')
-    document = language_v1.Document(content=text, type=language_v1.Document.Type.PLAIN_TEXT)
-
-    # Detects the sentiment of the text
-    sentiment = client.analyze_sentiment(request={'document': document}).document_sentiment
-    response = {
-        "score": sentiment.score,
-        "magnitude": sentiment.magnitude
-    }
-    return jsonify(response)
-
-@app.route('/imageanalysis', methods=['GET'])
+@app.route('/imageanalysis', methods=['POST'])
 @cross_origin()
 def analyse_image():
     # Image to analyse
-    base64encoding = request.args.get('img')
+    message = request.get_json(force=True)
+    base64encoding = message['image']
     base64_bytes = base64.b64decode(base64encoding)
-    resized_image = preprocess_image(base64_bytes)
+    image = np.frombuffer(base64_bytes, dtype=np.uint8)
+    resized_image = preprocess_image(image)
 
     if resized_image == -1:
         response = {
@@ -95,17 +83,19 @@ def analyse_image():
     return jsonify(response)
 
 
-def preprocess_image(base64_bytes, target_size=(48, 48)):
-    image = cv2.imread(io.BytesIO(base64_bytes))
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def preprocess_image(image, target_size=(48, 48)):
+    image = np.array(image)
+    if len(image.shape) == 3 and image.shape[2] == 3:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
     # image = image.convert("L")
-    # image = image.resize(target_size)
+    # # image = image.resize(target_size)
     # image = img_to_array(image)
 
     faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     faces = faceCascade.detectMultiScale(
         image,
-        scaleFactor=1.3,
+        scaleFactor=1.05,
         minNeighbors=3,
         minSize=(30, 30)
     )
