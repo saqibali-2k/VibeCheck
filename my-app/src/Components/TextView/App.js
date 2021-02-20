@@ -2,7 +2,7 @@ import "./App.css";
 import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { Grid, Container, makeStyles } from "@material-ui/core";
+import { Grid, Container, makeStyles, Box } from "@material-ui/core";
 const { Language } = require("@google-cloud/language");
 
 const styles = makeStyles({
@@ -32,23 +32,33 @@ export default function TextView() {
             <Container>
                 <Button>Go back</Button>
                 <Grid container alignItems="flex-end" justify="center">
-                    <Grid>
+                    <Grid xs={6}>
                         <h1>VIBE ✔</h1>
-                        <TextField
-                            id="standard-basic"
-                            label="Enter your text here"
-                            onChange={(e) => {
-                                setText(e.target.value);
-                            }}
-                        />
-                        <Button
-                            classes={{ root: classes.button }}
-                            onClick={() => {
-                                submitHandler(text);
-                            }}
-                        >
-                            Submit
-                        </Button>
+                        <Box boxShadow={4} alignItems="center" justify="center">
+                            <TextField
+                                fullWidth={true}
+                                id="standard-basic"
+                                label="Enter your text here"
+                                inputProps={{min: 0, style: { textAlign: 'center' }}}
+                                margin="dense"
+                                multiline
+                                onChange={(e) => {
+                                    setText(e.target.value);
+                                }}
+                            />
+                        </Box>
+                        
+                        <Box m={2}>
+                            <Button
+                                // classes={{ root: classes.button }}
+                                className="button"
+                                onClick={() => {
+                                    submitHandler(text);
+                                }}
+                            >
+                                Submit
+                            </Button>
+                        </Box>
                     </Grid>
                 </Grid>
             </Container>
