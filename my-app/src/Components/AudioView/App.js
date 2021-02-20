@@ -4,6 +4,7 @@ import MicRecorder from "mic-recorder-to-mp3";
 import {
     Container,
     Button,
+    Grid,
     Dialog,
     DialogActions,
     DialogContent,
@@ -75,43 +76,54 @@ export class AudioView extends React.Component {
 
     onSubmit() {
         var reader = new FileReader();
-        //   reader.readAsDataURL(this.state.blob.blob);
-        //    var superBuffer = new Blob([this.state.blob], {type: this.state.blob.options.mimeType});
-        //    reader.readAsDataURL(new Blob(this.state.blob, {type: 'video/webm'}));
         reader.readAsDataURL(this.state.recordedBlob);
         reader.onloadend = function () {
             var base64data = reader.result.split(",")[1];
             console.log(base64data);
+
+            fetch('http://localhost:5000/audioanalysis' + new URLSearchParams({
+                method: 'POST',
+                body: JSON.stringify({
+                    'audio': base64data
+                })
+            })).then(res => res.json()).then(data => {
+                console.log(data)
+            });
         };
+
     }
 
     render() {
         return (
             <div>
                 <Container>
-                    <button onClick={this.startRecording} type="button">
-                        Start
-                    </button>
-                    <button onClick={this.stopRecording} type="button">
-                        Stop
-                    </button>
-                    <Button
-                        onClick={() => {
-                            this.onSubmit();
-                        }}
-                    >
-                        Submit
-                    </Button>
-                    <Button variant="outlined" color="dark" component="label">
-                        Browse PC
-                        <input
-                            type="file"
-                            onChange={this.onFileSelected}
-                            accept="image/*"
-                            hidden
-                        />
-                    </Button>
-                    <audio controls src={this.state.blobURL} />
+                    <Grid container alignItems="flex-end" justify="center">
+                        <Grid xs={6}>
+                            <button onClick={this.startRecording} type="button">
+                                Start
+                            </button>
+                            <button onClick={this.stopRecording} type="button">
+                                Stop
+                            </button>
+                            <Button
+                                onClick={() => {
+                                    this.onSubmit();
+                                }}
+                            >
+                                Submit
+                            </Button>
+                            <Button variant="outlined" color="dark" component="label">
+                                Browse PC
+                                <input
+                                    type="file"
+                                    onChange={this.onFileSelected}
+                                    accept="image/*"
+                                    hidden
+                                />
+                            </Button>
+                            <audio controls src={this.state.blobURL} />
+                        </Grid> 
+                    </Grid>
                 </Container>
             </div>
         );
