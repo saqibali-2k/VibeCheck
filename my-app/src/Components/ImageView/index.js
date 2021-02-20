@@ -9,6 +9,8 @@ import {
 } from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
 import Webcam from "react-webcam";
+import { Bar } from "react-chartjs-2";
+import "./styles.css";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -23,6 +25,7 @@ class ImageView extends React.Component {
             },
             show: false,
             scrnshot: null,
+            data: {},
         };
 
         this.handleShow = this.handleShow.bind(this);
@@ -64,12 +67,48 @@ class ImageView extends React.Component {
             },
             body: JSON.stringify(message),
             method: "POST",
-        }
-        fetch("http://localhost:5000/imageanalysis", params).then((response) => {
-            return response.json();
-        }).then((data) => {
-            console.log(data)
-        }).catch(error => console.log(error))
+        };
+        fetch("http://localhost:5000/imageanalysis", params)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                if (data.hasOwnProperty("prediction")) {
+                    const labels = [];
+                    const dataset = [];
+                    for (let emotion in data.prediction) {
+                        labels.push(emotion);
+                        dataset.push(data.prediction[emotion]);
+                    }
+                    console.log(dataset);
+                    this.setState({
+                        data: {
+                            labels,
+                            datasets: [
+                                {
+                                    label: "emotion",
+                                    fillColor: "rgba(55, 255, 10, 1)",
+                                    strokeColor: "rgba(55, 255, 10, 1)",
+                                    highlightFill: "rgba(55, 255, 10, 1)",
+                                    highlightStroke: "rgba(55, 255, 10, 1)",
+                                    data: dataset,
+                                    backgroundColor: [
+                                        "rgba(55, 255, 10, 1)",
+                                        "rgba(55, 255, 10, 1)",
+                                        "rgba(55, 255, 10, 1)",
+                                        "rgba(55, 255, 10, 1)",
+                                        "rgba(55, 255, 10, 1)",
+                                        "rgba(55, 255, 10, 1)",
+                                        "rgba(55, 255, 10, 1)",
+                                    ],
+                                },
+                            ],
+                        },
+                    });
+                }
+            })
+            .catch((error) => console.log(error));
     }
 
     onFileSelected(e) {
@@ -143,11 +182,12 @@ class ImageView extends React.Component {
                 </Dialog>
                 <img src={this.state.scrnshot} />
 
-                {this.state.scrnshot != null && 
-                (<Button onClick={this.submit}>
-                    Submit
-                </Button>)}
-                
+                {this.state.scrnshot != null && (
+                    <Button onClick={this.submit}>Submit</Button>
+                )}
+                <div className="chartDiv">
+                    <Bar data={this.state.data} width={100} height={50} />
+                </div>
             </div>
         );
     }
