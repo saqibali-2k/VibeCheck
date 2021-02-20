@@ -1,5 +1,6 @@
 import React from "react";
 import { ReactMic } from "react-mic";
+import MicRecorder from "mic-recorder-to-mp3";
 import {
     Container,
     Button,
@@ -9,12 +10,15 @@ import {
     DialogTitle,
 } from "@material-ui/core";
 
+const Mp3Recorder = new MicRecorder({ bitRate: 128 });
+
 export class AudioView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             record: false,
             blob: { blobURL: "xd" },
+            blobURL: "",
         };
 
         this.onStop = this.onStop.bind(this);
@@ -23,11 +27,22 @@ export class AudioView extends React.Component {
     }
 
     startRecording = () => {
-        this.setState({ record: true });
+        Mp3Recorder.start()
+            .then(() => {
+                this.setState({ record: true });
+            })
+            .catch((e) => console.error(e));
     };
 
     stopRecording = () => {
-        this.setState({ record: false });
+        Mp3Recorder.stop()
+            .getMp3()
+            .then(([buffer, blob]) => {
+                const blobURL = URL.createObjectURL(blob);
+                this.setState({ blobURL, record: false, recordedBlob: blob });
+                console.log(blob);
+            })
+            .catch((e) => console.log(e));
     };
 
     onData(recordedBlob) {
@@ -58,42 +73,36 @@ export class AudioView extends React.Component {
         }
     }
 
-    onSubmit(){
-
-       var reader = new FileReader();
-    //   reader.readAsDataURL(this.state.blob.blob); 
-       var superBuffer = new Blob([this.state.blob], {type: this.state.blob.options.mimeType});
-    //    reader.readAsDataURL(new Blob(this.state.blob, {type: 'video/webm'}));
-       reader.readAsDataURL(superBuffer);
-       reader.onloadend = function() {
-           var base64data = reader.result.split(",")[1];                
-           console.log(base64data);
-       }
+    onSubmit() {
+        var reader = new FileReader();
+        //   reader.readAsDataURL(this.state.blob.blob);
+        //    var superBuffer = new Blob([this.state.blob], {type: this.state.blob.options.mimeType});
+        //    reader.readAsDataURL(new Blob(this.state.blob, {type: 'video/webm'}));
+        reader.readAsDataURL(this.state.recordedBlob);
+        reader.onloadend = function () {
+            var base64data = reader.result.split(",")[1];
+            console.log(base64data);
+        };
     }
 
     render() {
         return (
             <div>
                 <Container>
-                <ReactMic
-                    record={this.state.record}
-                    className="sound-wave"
-                    onStop={this.onStop}
-                    onData={this.onData}
-                    strokeColor="#000000"
-                    backgroundColor="#FF4081"
-                />
-                <button onClick={this.startRecording} type="button">
-                    Start
-                </button>
-                <button onClick={this.stopRecording} type="button">
-                    Stop
-                </button>
-                <Button onClick={() => {
-                                this.onSubmit();
-                            }}>Submit
-                </Button>
-                <Button variant="outlined" color="dark" component="label">
+                    <button onClick={this.startRecording} type="button">
+                        Start
+                    </button>
+                    <button onClick={this.stopRecording} type="button">
+                        Stop
+                    </button>
+                    <Button
+                        onClick={() => {
+                            this.onSubmit();
+                        }}
+                    >
+                        Submit
+                    </Button>
+                    <Button variant="outlined" color="dark" component="label">
                         Browse PC
                         <input
                             type="file"
@@ -101,8 +110,8 @@ export class AudioView extends React.Component {
                             accept="image/*"
                             hidden
                         />
-                </Button>
-                <audio controls src={this.state.blob.blobURL} />
+                    </Button>
+                    <audio controls src={this.state.blobURL} />
                 </Container>
             </div>
         );
