@@ -35,7 +35,6 @@ export default function TextView() {
     return (
         <div>
             <Container>
-                <Button>Go back</Button>
                 <Grid container alignItems="flex-end" justify="center">
                     <Grid item xs={6}>
                         <h1>VIBE ✔</h1>
