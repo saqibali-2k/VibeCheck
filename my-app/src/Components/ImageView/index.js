@@ -1,6 +1,13 @@
 import React from "react";
-import { Container, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
-import Slide from '@material-ui/core/Slide';
+import {
+    Container,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from "@material-ui/core";
+import Slide from "@material-ui/core/Slide";
 import Webcam from "react-webcam";
 
 class ImageButton extends React.Component {
@@ -22,7 +29,7 @@ class ImageView extends React.Component {
             },
             show: false,
             scrnshot: null,
-        }
+        };
 
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -33,13 +40,13 @@ class ImageView extends React.Component {
     handleShow() {
         this.setState({
             show: true,
-        })
+        });
     }
 
     handleClose() {
         this.setState({
             show: false,
-        })
+        });
     }
 
     handleScreenShot() {
@@ -47,8 +54,8 @@ class ImageView extends React.Component {
         // const img = new Image();
         // img.src = imgSrc;
         this.setState({
-            scrnshot: imgSrc
-        })
+            scrnshot: imgSrc,
+        });
         this.handleClose();
     }
 
@@ -57,10 +64,10 @@ class ImageView extends React.Component {
             let reader = new FileReader();
 
             const callback = (url) => {
-              this.setState({
-                scrnshot: url
-              }) 
-            }
+                this.setState({
+                    scrnshot: url,
+                });
+            };
             reader.onloadend = function () {
                 const dataUrl = reader.result;
                 // const image = new Image();
@@ -72,57 +79,57 @@ class ImageView extends React.Component {
     }
 
     render() {
-
         console.log(this.state.scrnshot);
-    return (
-        <div>
-            <div id="buttons">
-                <Button variant="outlined" color="dark" onClick={this.handleShow}>
-                    Use Camera
-                </Button>
-                <Button variant="outlined" color="dark" component="label">
-                    Browse PC
-                    <input
-                        type="file"
-                        onChange={this.onFileSelected}
-                        accept="image/*"
-                        hidden
-                    />
-                </Button>
+        return (
+            <div>
+                <div id="buttons">
+                    <Button
+                        variant="outlined"
+                        color="dark"
+                        onClick={this.handleShow}
+                    >
+                        Use Camera
+                    </Button>
+                    <Button variant="outlined" color="dark" component="label">
+                        Browse PC
+                        <input
+                            type="file"
+                            onChange={this.onFileSelected}
+                            accept="image/*"
+                            hidden
+                        />
+                    </Button>
+                </div>
+                <Dialog
+                    open={this.state.show}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={this.handleClose}
+                >
+                    <DialogTitle>Camera View</DialogTitle>
+                    <DialogContent>
+                        <Webcam
+                            audio={false}
+                            mirrored={true}
+                            ref={this.state.webcamRef}
+                            style={{
+                                height: "100%",
+                                width: "100%",
+                                objectFit: "cover",
+                                objectPosition: "center",
+                            }}
+                            screenshotFormat="image/jpeg"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleScreenShot}>
+                            Screenshot
+                        </Button>
+                        <Button onClick={this.handleClose}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+                <img src={this.state.scrnshot} />
             </div>
-            <Dialog
-                open={this.state.show}
-                TransitionComponent={Transition}
-                keepMounted
-                onClose={this.handleClose}>
-                <DialogTitle >
-                    Camera View
-                </DialogTitle>
-                <DialogContent>
-                    <Webcam
-                    audio={false}
-                    mirrored={true}
-                    ref={this.state.webcamRef}
-                    style={{
-                        height: "100%",
-                        width: "100%",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                    }}
-                    screenshotFormat="image/jpeg"
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleScreenShot}>
-                        Screenshot
-                    </Button>
-                    <Button onClick={this.handleClose}>
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <img src={this.state.scrnshot}/>
-        </div>
         );
     }
 }
