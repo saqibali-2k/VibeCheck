@@ -1,11 +1,14 @@
 # VibeCheck
-<p align="center">
-  <img src = https://github.com/nikolamarunic/images/blob/master/splash_screen.png>
-</p>
 
 A web app for discerning the emotions behind text messages and images, intended to help people with ASD who are struggling with the remote nature of the COVID-19 Pandemic.
 
 This app was made with **React** and **Flask**, and makes use of **Google Cloud Computing NLP API & Tensorflow** to analyze the seniments of text and images.
+
+[Here is a live demo video!](https://www.youtube.com/watch?v=4ZMsHYv4X74)
+
+<p align="center">
+  <img src = https://github.com/nikolamarunic/images/blob/master/splash_screen.png>
+</p>
 
 # Overview
 
