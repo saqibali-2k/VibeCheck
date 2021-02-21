@@ -5,6 +5,7 @@ A web app for discerning the emotions behind text messages and images, intended 
 This app was made with **React** and **Flask**, and makes use of **Google Cloud Computing NLP API & Tensorflow** to analyze the seniments of text and images.
 
 [Here is a live demo video!](https://www.youtube.com/watch?v=4ZMsHYv4X74)
+
 [Link to the devpost](https://devpost.com/software/vibecheck-vx5pqn)
 
 <p align="center">
