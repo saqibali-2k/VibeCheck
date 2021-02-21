@@ -41,5 +41,6 @@ Upon submitting their image they can see a bar chart breakdown displaying the li
   <img src = https://github.com/nikolamarunic/images/blob/master/barchart.png>
 </p>
 
+Link to trained model: https://drive.google.com/file/d/1KzIxlzgZN-eQk_f45SDd-VY_F7bGEi4x/view
 # LICENSE
 MIT
